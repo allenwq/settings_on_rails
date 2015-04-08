@@ -17,9 +17,74 @@ Or install it yourself as:
 
     $ gem install settings_on_rails
 
-## Usage
+## Getting Started
 
-TODO: Write usage instructions here
+Start off by adding a text field to the model which you want it to have settings
+```ruby
+rails g migration add_settings_column_to_blogs settings_column:text
+
+```
+
+Declare in model
+```ruby
+class Blog < ActiveRecord::Base
+  has_settings_on :settings_column
+end
+```
+
+Set settings
+```ruby
+@blog.settings.title = 'My Blog'
+@blog.settings(:theme).background_color = 'blue'
+
+@blog.save
+```
+
+Get settings
+```ruby
+@blog.settings(:theme).background_color # returns 'blue'
+
+@blog.settings(:post).pagination # returns nil if not set
+
+```
+
+## Default Values
+
+```ruby
+class Blog < ActiveRecord::Base
+  has_settings_on :column
+
+  has_settings do |s|
+    s.define :theme, defaults:{ background_color: 'red', text_size: 50 }
+  end
+end
+```
+OR
+```ruby
+class Blog < ActiveRecord::Base
+  has_settings_on :column do |s|
+    s.define :theme, defaults:{ background_color: 'red', text_size: 50 }
+  end
+end
+```
+
+## Multiple Keys
+
+```ruby
+@blog.settings(:theme, :homepage).background_color = 'white'
+@blog.settings(:theme, :homepage, :pagination).enabled = false
+```
+
+## Method Name Customization
+You can customize the name of the settings method
+```ruby
+class Blog < ActiveRecord::Base
+  has_settings_on :settings_column, method_name: :preferences
+end
+
+# Then you can do
+@blog.preferences(:theme).background_color
+```
 
 ## Development
 
