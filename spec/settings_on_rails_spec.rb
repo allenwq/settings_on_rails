@@ -3,6 +3,8 @@ require 'support/models'
 require 'settings_on_rails'
 
 RSpec.describe SettingsOnRails do
+  before(:each) { clear_database }
+
   describe 'column type validations' do
     context 'with exiting column of type text' do
       before { Blog.class_eval { has_settings_on :settings } }
