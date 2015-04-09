@@ -1,4 +1,4 @@
-# SettingsOnRails
+# SettingsOnRails[![Build Status](https://travis-ci.org/allenwq/settings_on_rails.svg?branch=master)](https://travis-ci.org/allenwq/settings_on_rails)
 
 
 ## Installation
