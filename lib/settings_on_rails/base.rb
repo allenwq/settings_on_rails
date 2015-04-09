@@ -10,7 +10,7 @@ module SettingsOnRails
         define_method method_name do |*keys|
           column = SettingsColumn.check!(self)
 
-          SettingsHandler.new(keys, self, column)
+          SettingsHandler.new(keys, self, column, method_name)
         end
       end
 

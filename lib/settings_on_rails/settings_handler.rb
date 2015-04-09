@@ -1,17 +1,16 @@
 module SettingsOnRails
   class SettingsHandler
     attr_accessor :keys, :parent
-    def initialize(keys, target_object, column, parent = nil)
+    def initialize(keys, target_object, column, method_name, parent = nil)
       @keys = _prefix(keys.dup)
       @target_object = target_object
       @column = column
+      @method_name = method_name
       @parent = parent
-    end
-
-    def settings(*keys)
-      raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
-
-      SettingsHandler.new(keys, @target_object, @column, self)
+      
+      self.class_eval do
+        define_method(method_name, instance_method(:_settings))
+      end
     end
 
     REGEX_SETTER = /\A([a-z]\w+)=\Z/i
@@ -32,6 +31,12 @@ module SettingsOnRails
     end
 
     private
+    def _settings(*keys)
+      raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
+
+      SettingsHandler.new(keys, @target_object, @column, @method_name, self)
+    end
+
     def _get_value(name)
       node = _get_key_node
 
@@ -84,10 +89,6 @@ module SettingsOnRails
 
     def _target_column
       @target_object.read_attribute(@column.to_sym)
-    end
-
-    def _target_class
-      @target_object.class
     end
 
     # prefix keys with __, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
