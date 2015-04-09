@@ -55,7 +55,7 @@ class Blog < ActiveRecord::Base
   has_settings_on :column
 
   has_settings do |s|
-    s.define :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.has_key :theme, defaults:{ background_color: 'red', text_size: 50 }
   end
 end
 ```
@@ -68,18 +68,24 @@ class Blog < ActiveRecord::Base
 end
 ```
 
-## Multiple Keys
+## Nested/Multiple Keys
+
 
 ```ruby
 @blog.settings(:theme, :homepage).background_color = 'white'
-@blog.settings(:theme, :homepage, :pagination).enabled = false
+#OR
+@blog.settings(:theme).settings(:homepage).background_color = 'white'
+
+@blog.settings(:theme, :homepage).background_color # 'white'
+#OR
+@blog.settings(:theme).settings(:homepage).background_color # 'white'
 ```
 
 ## Method Name Customization
 You can customize the name of the settings method
 ```ruby
 class Blog < ActiveRecord::Base
-  has_settings_on :settings_column, method_name: :preferences
+  has_settings_on :settings_column, method: :preferences
 end
 
 # Then you can do
