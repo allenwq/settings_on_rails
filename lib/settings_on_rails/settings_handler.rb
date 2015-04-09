@@ -1,9 +1,17 @@
 module SettingsOnRails
   class SettingsHandler
-    def initialize(keys, target_object, column)
+    attr_accessor :keys, :parent
+    def initialize(keys, target_object, column, parent = nil)
       @keys = _prefix(keys.dup)
       @target_object = target_object
       @column = column
+      @parent = parent
+    end
+
+    def settings(*keys)
+      raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
+
+      SettingsHandler.new(keys, @target_object, @column, self)
     end
 
     REGEX_SETTER = /\A([a-z]\w+)=\Z/i
@@ -50,7 +58,7 @@ module SettingsOnRails
     def _key_node_exist?
       value = _target_column
 
-      for key in @keys
+      for key in _key_chain
           value = value[key]
           return false unless value
       end
@@ -62,13 +70,13 @@ module SettingsOnRails
       ret = _key_node_exist?
       return nil unless ret
 
-      @keys.inject(_target_column) { |h, key| h[key] }
+      _key_chain.inject(_target_column) { |h, key| h[key] }
     end
 
     def _build_key_tree
       value = _target_column
 
-      for key in @keys
+      for key in _key_chain
         value[key] = {} unless value[key]
         value = value[key]
       end
@@ -89,6 +97,19 @@ module SettingsOnRails
         keys[i] = ('__' + keys[i].to_s).to_sym
       end
       keys
+    end
+
+    # Returns a key chain which includes all parent's keys and self keys
+    def _key_chain
+      handler = self
+      key_chain = []
+
+      begin
+        key_chain = handler.keys + key_chain
+        handler = handler.parent
+      end while handler
+
+      key_chain
     end
   end
 end
