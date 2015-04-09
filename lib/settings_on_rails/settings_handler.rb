@@ -15,8 +15,8 @@ module SettingsOnRails
       end
     end
 
-    REGEX_SETTER = /\A([a-z]\w+)=\Z/i
-    REGEX_GETTER = /\A([a-z]\w+)\Z/i
+    REGEX_SETTER = /\A([a-z]\w*)=\Z/i
+    REGEX_GETTER = /\A([a-z]\w*)\Z/i
 
     def respond_to?(method_name, include_priv=false)
       super || method_name.to_s =~ REGEX_SETTER
