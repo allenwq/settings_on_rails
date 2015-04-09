@@ -1,5 +1,7 @@
 module SettingsOnRails
   class SettingsHandler
+    PREFIX = '_'
+
     attr_accessor :keys, :parent
     def initialize(keys, target_object, column, method_name, parent = nil)
       @keys = _prefix(keys.dup)
@@ -7,7 +9,7 @@ module SettingsOnRails
       @column = column
       @method_name = method_name
       @parent = parent
-      
+
       self.class_eval do
         define_method(method_name, instance_method(:_settings))
       end
@@ -91,11 +93,11 @@ module SettingsOnRails
       @target_object.read_attribute(@column.to_sym)
     end
 
-    # prefix keys with __, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
-    # thus __ becomes an reserved field
+    # prefix keys with _, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
+    # thus _ becomes an reserved field
     def _prefix(keys)
       for i in 0..(keys.length - 1)
-        keys[i] = ('__' + keys[i].to_s).to_sym
+        keys[i] = (PREFIX + keys[i].to_s).to_sym
       end
       keys
     end
