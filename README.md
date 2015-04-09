@@ -1,5 +1,6 @@
-# SettingsOnRails[![Build Status](https://travis-ci.org/allenwq/settings_on_rails.svg?branch=master)](https://travis-ci.org/allenwq/settings_on_rails)
-
+# SettingsOnRails
+[![Build Status](https://travis-ci.org/allenwq/settings_on_rails.svg?branch=master)](https://travis-ci.org/allenwq/settings_on_rails)
+[![Coverage Status](https://coveralls.io/repos/allenwq/settings_on_rails/badge.svg?branch=master)](https://coveralls.io/r/allenwq/settings_on_rails?branch=master)
 
 ## Installation
 
