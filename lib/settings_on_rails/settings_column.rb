@@ -18,6 +18,7 @@ module SettingsOnRails
     def self.check!(instance)
       settings_column = column(instance)
       raise NoSettingsColumnError unless settings_column
+      raise ColumnNotExistError unless instance.has_attribute?(settings_column)
       raise InvalidColumnTypeError if column_type_not_text?(instance, settings_column)
 
       settings_column

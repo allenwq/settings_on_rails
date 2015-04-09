@@ -2,7 +2,13 @@ module SettingsOnRails
 
   class NoSettingsColumnError < StandardError
     def message
-      'Settings column not specified, have you declared has_settings_on before?'
+      'settings column not specified, have you declared has_settings_on before?'
+    end
+  end
+
+  class ColumnNotExistError < StandardError
+    def message
+      'settings column does not exist, have you added the column in database?'
     end
   end
 
