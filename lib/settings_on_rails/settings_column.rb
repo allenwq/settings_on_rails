@@ -8,13 +8,13 @@ module SettingsOnRails
 
         serialize column, Hash
         SettingsColumn::data_init(self)
-        SettingsColumn::data_of(self)[:column_name] = column.to_sym
+        SettingsColumn::data_of(self)[:__column_name] = column.to_sym
       end
     end
 
     # Returns the name of settings column for that instance
     def self.column_name(instance)
-      instance.class.send(SettingsColumn::DATA)[:column_name]
+      instance.class.send(SettingsColumn::DATA)[:__column_name]
     end
 
     # Check for the validity of the settings column

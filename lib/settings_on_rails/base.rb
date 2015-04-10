@@ -14,9 +14,10 @@ module SettingsOnRails
         end
       end
 
-      def has_settings
-        raise NoSettingsColumnError unless SettingsColumn::NAME
-        yield if block_given?
+      def has_settings(*keys)
+        settings = HasSettings.new(keys, self, SettingsColumn::DATA)
+        yield settings if block_given?
+        settings
       end
     end
   end
