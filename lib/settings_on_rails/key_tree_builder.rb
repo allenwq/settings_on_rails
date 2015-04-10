@@ -15,7 +15,6 @@ module SettingsOnRails
 
     # Call this method before set any values
     def build_nodes
-      @target_obj.send("#{@column_name}_will_change!")
       value = _target_column
 
       for key in _key_chain
@@ -51,7 +50,11 @@ module SettingsOnRails
     end
 
     def _target_column
-      @target_obj.read_attribute(@column_name.to_sym)
+      if @target_obj.respond_to?(:read_attribute)
+        @target_obj.read_attribute(@column_name.to_sym)
+      else
+        @target_obj.send(@column_name.to_sym)
+      end
     end
   end
 end

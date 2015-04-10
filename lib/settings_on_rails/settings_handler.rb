@@ -1,12 +1,12 @@
 require 'settings_on_rails/key_tree_builder'
-
 module SettingsOnRails
   class SettingsHandler
-    PREFIX = '_'
     attr_accessor :keys, :parent
 
+    # All keys must be symbols, and attributes are strings
+    # Thus we can differentiate settings(:key).attr and settings(:key, :attr)
     def initialize(keys, target_object, settings_column_name, method_name, parent = nil)
-      @keys = _prefix(keys.dup)
+      @keys = keys
       @target_object = target_object
       @column_name = settings_column_name
       @method_name = method_name
@@ -49,13 +49,14 @@ module SettingsOnRails
       if node
         node[name]
       else
-        nil
+        _default_settings(name) || nil
       end
     end
 
     def _set_value(name, v)
       return if _get_value(name) == v
 
+      @target_object.send("#{@column_name}_will_change!")
       @builder.build_nodes
       node = @builder.current_node
 
@@ -66,13 +67,9 @@ module SettingsOnRails
       end
     end
 
-    # prefix keys with _, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
-    # thus _ becomes an reserved field
-    def _prefix(keys)
-      for i in 0..(keys.length - 1)
-        keys[i] = (PREFIX + keys[i].to_s).to_sym
-      end
-      keys
+    def _default_settings(name)
+      default_node = KeyTreeBuilder.new(self, @target_object.class, SettingsColumn::DATA).current_node
+      default_node[name] if default_node
     end
   end
 end

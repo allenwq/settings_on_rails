@@ -1,103 +1,60 @@
+require 'settings_on_rails/key_tree_builder'
+
 module SettingsOnRails
   class HasSettings
-    PREFIX = '_'
-
     attr_accessor :keys, :parent
+
     def initialize(keys, target_model, column, parent = nil)
-      @keys = _prefix(keys.dup)
+      @keys = keys
       @target_model = target_model
       @column = column
       @parent = parent
+      @builder = KeyTreeBuilder.new(self, target_model, column)
     end
 
     REGEX_ATTR = /\A([a-z]\w*)\Z/i
 
     def key(*keys)
-      return unless keys.last.is_a?(Hash) && keys.size >= 2
-
       options = keys.last
+      keys = keys[0...-1]
+      raise ArgumentError.new('has_settings: Hash option is expected') unless options.is_a?(Hash)
+      raise ArgumentError.new("has_settings: Option :defaults expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:defaults])
+      keys.each do |key_name|
+        raise ArgumentError.new("has_settings: symbol expected, but got a #{key_name.class}") unless key_name.is_a?(Symbol)
+      end
+
       options[:defaults].each do |k, v|
-        has_settings(*keys[0...-1]).attr(k, default: v)
+        has_settings(*keys).attr(k, default: v)
       end
     end
 
     def attr(value, options = {})
+      raise ArgumentError.new("has_settings: symbol expected, but got a #{value.class}") unless value.is_a?(Symbol)
+      raise ArgumentError.new("has_settings: Option :default expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:default])
+
       default_value = options[:default]
-      return unless default_value
       raise 'Error' unless value.to_s =~ REGEX_ATTR
 
-      _set_value(value, default_value)
+      _set_value(value.to_s, default_value)
     end
 
     def has_settings(*keys)
-      s = HasSettings.new(keys, @target_model, @column, self)
-      yield s if block_given?
-      s
+      settings = HasSettings.new(keys, @target_model, @column, self)
+      yield settings if block_given?
+      settings
     end
 
     private
 
     def _set_value(name, v)
-      _build_key_tree
-      node = _get_key_node
+      @builder.build_nodes
+      node = @builder.current_node
+
       if v.nil?
         node.delete(name)
       else
         node[name] = v
       end
-    end
-
-    def _key_node_exist?
-      value = _target_column
-
-      for key in _key_chain
-          value = value[key]
-          return false unless value
-      end
-
-      true
-    end
-
-    def _get_key_node
-      ret = _key_node_exist?
-      return nil unless ret
-
-      _key_chain.inject(_target_column) { |h, key| h[key] }
-    end
-
-    def _build_key_tree
-      value = _target_column
-
-      for key in _key_chain
-        value[key] = {} unless value[key]
-        value = value[key]
-      end
-    end
-
-    def _target_column
-      @target_model.send(@column.to_sym)
-    end
-
-    # prefix keys with _, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
-    # thus _ becomes an reserved field
-    def _prefix(keys)
-      for i in 0..(keys.length - 1)
-        keys[i] = (PREFIX + keys[i].to_s).to_sym
-      end
-      keys
-    end
-
-    # Returns a key chain which includes all parent's keys and self keys
-    def _key_chain
-      handler = self
-      key_chain = []
-
-      begin
-        key_chain = handler.keys + key_chain
-        handler = handler.parent
-      end while handler
-
-      key_chain
     end
   end
 end
