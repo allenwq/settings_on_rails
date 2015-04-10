@@ -1,19 +1,19 @@
 module SettingsOnRails
   module SettingsColumn
-    NAME = :__settings_column
+    DATA = :__settings_data
 
     def self.setup(klass, column)
       klass.class_eval do
-        class << self; attr_accessor SettingsColumn::NAME; end
+        class << self; attr_accessor SettingsColumn::DATA; end
 
         serialize column, Hash
-        self.send(SettingsColumn::NAME.to_s + '=', column.to_sym)
+        self.send(SettingsColumn::DATA.to_s + '=', column.to_sym)
       end
     end
 
     # Returns the name of settings column for that instance
     def self.column_name(instance)
-      instance.class.send(SettingsColumn::NAME)
+      instance.class.send(SettingsColumn::DATA)
     end
 
     # Check for the validity of the settings column
