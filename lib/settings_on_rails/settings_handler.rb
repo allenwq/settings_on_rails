@@ -1,14 +1,17 @@
+require 'settings_on_rails/key_tree_builder'
+
 module SettingsOnRails
   class SettingsHandler
     PREFIX = '_'
-
     attr_accessor :keys, :parent
-    def initialize(keys, target_object, column, method_name, parent = nil)
+
+    def initialize(keys, target_object, settings_column_name, method_name, parent = nil)
       @keys = _prefix(keys.dup)
       @target_object = target_object
-      @column = column
+      @column_name = settings_column_name
       @method_name = method_name
       @parent = parent
+      @builder = KeyTreeBuilder.new(self, target_object, settings_column_name)
 
       self.class_eval do
         define_method(method_name, instance_method(:_settings))
@@ -33,14 +36,15 @@ module SettingsOnRails
     end
 
     private
+
     def _settings(*keys)
       raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
 
-      SettingsHandler.new(keys, @target_object, @column, @method_name, self)
+      SettingsHandler.new(keys, @target_object, @column_name, @method_name, self)
     end
 
     def _get_value(name)
-      node = _get_key_node
+      node = @builder.current_node
 
       if node
         node[name]
@@ -52,45 +56,14 @@ module SettingsOnRails
     def _set_value(name, v)
       return if _get_value(name) == v
 
-      @target_object.send("#{@column}_will_change!")
-      _build_key_tree
-      node = _get_key_node
+      @builder.build_nodes
+      node = @builder.current_node
+
       if v.nil?
         node.delete(name)
       else
         node[name] = v
       end
-    end
-
-    def _key_node_exist?
-      value = _target_column
-
-      for key in _key_chain
-          value = value[key]
-          return false unless value
-      end
-
-      true
-    end
-
-    def _get_key_node
-      ret = _key_node_exist?
-      return nil unless ret
-
-      _key_chain.inject(_target_column) { |h, key| h[key] }
-    end
-
-    def _build_key_tree
-      value = _target_column
-
-      for key in _key_chain
-        value[key] = {} unless value[key]
-        value = value[key]
-      end
-    end
-
-    def _target_column
-      @target_object.read_attribute(@column.to_sym)
     end
 
     # prefix keys with _, to differentiate `settings(:key_a, :key_b)` and settings(:key_a).key_b
@@ -100,19 +73,6 @@ module SettingsOnRails
         keys[i] = (PREFIX + keys[i].to_s).to_sym
       end
       keys
-    end
-
-    # Returns a key chain which includes all parent's keys and self keys
-    def _key_chain
-      handler = self
-      key_chain = []
-
-      begin
-        key_chain = handler.keys + key_chain
-        handler = handler.parent
-      end while handler
-
-      key_chain
     end
   end
 end
