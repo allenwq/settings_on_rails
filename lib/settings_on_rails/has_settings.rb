@@ -1,6 +1,12 @@
 require 'settings_on_rails/key_tree_builder'
 
 module SettingsOnRails
+  # Creates a object to save default settings
+  #
+  # @param [Array] keys, the symbol keys in a array
+  # @param [Class] target_model, default values will be saved in an class attribute in target model
+  # @param [Symbol] column_name, the column name in target_model to save default values
+  # @param [HasSettings] parent, parent has_settings object
   class HasSettings < KeyTreeBuilder
     def initialize(keys, target_model, column_name, parent = nil)
       super(keys, target_model, column_name, parent)
@@ -11,6 +17,10 @@ module SettingsOnRails
 
     REGEX_ATTR = /\A([a-z]\w*)\Z/i
 
+    # Declare a key, with default values
+    #
+    # @param [Symbol] keys
+    # @param [Hash] options, the last param must be an option with a defaults hash
     def key(*keys)
       options = keys.last
       keys = keys[0...-1]
@@ -25,6 +35,10 @@ module SettingsOnRails
       end
     end
 
+    # Declare an attribute with default value
+    #
+    # @param [Symbol] value
+    # @param [Hash] options, options with a default Hash
     def attr(value, options = {})
       raise ArgumentError.new("has_settings: symbol expected, but got a #{value.class}") unless value.is_a?(Symbol)
       raise ArgumentError.new("has_settings: Option :default expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:default])

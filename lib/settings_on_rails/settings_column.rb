@@ -1,20 +1,21 @@
 module SettingsOnRails
   module SettingsColumn
-    DATA = :__settings_data
+    NAME_COLUMN = :settings_column_name
+    DEFAULTS_COLUMN = :default_settings
 
     def self.setup(klass, column)
       klass.class_eval do
-        class << self; attr_accessor SettingsColumn::DATA; end
+        class_attribute SettingsColumn::NAME_COLUMN, SettingsColumn::DEFAULTS_COLUMN
 
         serialize column, Hash
-        SettingsColumn::data_init(self)
-        SettingsColumn::data_of(self)[:__column_name] = column.to_sym
+        SettingsColumn::init_defaults_column(self)
+        SettingsColumn::init_name_column(self, column.to_sym)
       end
     end
 
     # Returns the name of settings column for that instance
     def self.column_name(instance)
-      instance.class.send(SettingsColumn::DATA)[:__column_name]
+      instance.class.send(SettingsColumn::NAME_COLUMN)
     end
 
     # Check for the validity of the settings column
@@ -29,15 +30,15 @@ module SettingsOnRails
     end
 
     # init to Hash {} for data attribute in klass if nil
-    def self.data_init(klass)
-      data_column = klass.send(SettingsColumn::DATA)
-      klass.send(SettingsColumn::DATA.to_s + '=', {}) unless data_column
+    def self.init_defaults_column(klass)
+      defaults = klass.send(SettingsColumn::DEFAULTS_COLUMN)
+      klass.send(SettingsColumn::DEFAULTS_COLUMN.to_s + '=', {}) unless defaults
     end
 
-    # Returns a Hash attribute to store values in klass
-    def self.data_of(klass)
-      klass.send(SettingsColumn::DATA)
+    def self.init_name_column(klass, column_name)
+      klass.send(SettingsColumn::NAME_COLUMN.to_s + '=', column_name)
     end
+
 
     private
 

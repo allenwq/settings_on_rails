@@ -15,7 +15,7 @@ module SettingsOnRails
       end
 
       def has_settings(*keys)
-        settings = HasSettings.new(keys, self, SettingsColumn::DATA)
+        settings = HasSettings.new(keys, self, SettingsColumn::DEFAULTS_COLUMN)
         yield settings if block_given?
 
         settings
