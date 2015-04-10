@@ -47,7 +47,7 @@ module SettingsOnRails
       build_nodes
 
       if v.nil?
-      current_node.delete(name)
+        current_node.delete(name)
       else
         current_node[name] = v
       end

@@ -1,7 +1,7 @@
 require 'settings_on_rails/key_tree_builder'
 
 module SettingsOnRails
-  class SettingsHandler < KeyTreeBuilder
+  class Settings < KeyTreeBuilder
     def initialize(keys, target_object, settings_column_name, method_name, parent = nil)
       super(keys, target_object, settings_column_name, parent)
       @target_object = target_object
@@ -35,7 +35,7 @@ module SettingsOnRails
     def _settings(*keys)
       raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
 
-      SettingsHandler.new(keys, @target_object, @column_name, @method_name, self)
+      Settings.new(keys, @target_object, @column_name, @method_name, self)
     end
 
     def _get_value(name)
