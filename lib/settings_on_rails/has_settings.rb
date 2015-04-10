@@ -1,15 +1,12 @@
 require 'settings_on_rails/key_tree_builder'
 
 module SettingsOnRails
-  class HasSettings
-    attr_accessor :keys, :parent
+  class HasSettings < KeyTreeBuilder
+    def initialize(keys, target_model, column_name, parent = nil)
+      super(keys, target_model, column_name, parent)
 
-    def initialize(keys, target_model, column, parent = nil)
-      @keys = keys
       @target_model = target_model
-      @column = column
-      @parent = parent
-      @builder = KeyTreeBuilder.new(self, target_model, column)
+      @column_name = column_name
     end
 
     REGEX_ATTR = /\A([a-z]\w*)\Z/i
@@ -39,7 +36,7 @@ module SettingsOnRails
     end
 
     def has_settings(*keys)
-      settings = HasSettings.new(keys, @target_model, @column, self)
+      settings = HasSettings.new(keys, @target_model, @column_name, self)
       yield settings if block_given?
       settings
     end
@@ -47,13 +44,12 @@ module SettingsOnRails
     private
 
     def _set_value(name, v)
-      @builder.build_nodes
-      node = @builder.current_node
+      build_nodes
 
       if v.nil?
-        node.delete(name)
+      current_node.delete(name)
       else
-        node[name] = v
+        current_node[name] = v
       end
     end
   end

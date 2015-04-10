@@ -1,9 +1,14 @@
 module SettingsOnRails
   class KeyTreeBuilder
-    def initialize(base, target_obj, target_column_name)
-      @base_obj = base
+    attr_accessor :keys, :parent
+
+    # All keys must be symbols, and attributes are strings
+    # Thus we can differentiate settings(:key).attr and settings(:key, :attr)
+    def initialize(keys, target_obj, target_column_name, parent)
+      @keys = keys
       @target_obj = target_obj
       @column_name = target_column_name
+      @parent = parent
     end
 
     # Returns column[key_chain[0]][key_chain[1]][...]
@@ -38,7 +43,7 @@ module SettingsOnRails
 
     # Returns a key chain which includes all parent's keys and self keys
     def _key_chain
-      handler = @base_obj
+      handler = self
       key_chain = []
 
       begin

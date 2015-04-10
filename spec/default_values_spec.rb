@@ -31,7 +31,7 @@ RSpec.describe 'DefaultsHandler' do
         end
         subject { Blog.new }
 
-        it 'returns the default value', focus: true do
+        it 'returns the default value' do
           expect(Blog.new.settings(:theme).settings(:homepage).text_size).to eq 50
         end
       end
