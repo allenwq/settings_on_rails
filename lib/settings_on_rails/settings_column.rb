@@ -11,17 +11,20 @@ module SettingsOnRails
       end
     end
 
-    def self.column(instance)
+    # Returns the name of settings column for that instance
+    def self.column_name(instance)
       instance.class.send(SettingsColumn::NAME)
     end
 
+    # Check for the validity of the settings column
+    # Returns the column name if valid
     def self.check!(instance)
-      settings_column = column(instance)
-      raise NoSettingsColumnError unless settings_column
-      raise ColumnNotExistError unless instance.has_attribute?(settings_column)
-      raise InvalidColumnTypeError if column_type_not_text?(instance, settings_column)
+      settings_column_name = column_name(instance)
+      raise NoSettingsColumnError unless settings_column_name
+      raise ColumnNotExistError unless instance.has_attribute?(settings_column_name)
+      raise InvalidColumnTypeError if column_type_not_text?(instance, settings_column_name)
 
-      settings_column
+      settings_column_name
     end
 
     private
