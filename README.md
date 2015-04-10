@@ -1,4 +1,4 @@
-# SettingsOnRails
+# Settings on Rails
 [![Build Status](https://travis-ci.org/allenwq/settings_on_rails.svg?branch=master)](https://travis-ci.org/allenwq/settings_on_rails)
 [![Coverage Status](https://coveralls.io/repos/allenwq/settings_on_rails/badge.svg?branch=master)](https://coveralls.io/r/allenwq/settings_on_rails?branch=master)
 
@@ -46,9 +46,9 @@ Get settings
 @blog.settings(:theme).background_color # returns 'blue'
 
 @blog.settings(:post).pagination # returns nil if not set
-
 ```
 
+<!--
 ## Default Values
 
 ```ruby
@@ -64,23 +64,30 @@ OR
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :column do |s|
-    s.define :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.has_key :theme, defaults:{ background_color: 'red', text_size: 50 }
   end
 end
 ```
+-->
 
-## Nested/Multiple Keys
-
-
+## Nested Keys
+Settings on Rails supports nested keys
 ```ruby
-@blog.settings(:theme, :homepage).background_color = 'white'
-#OR
+# Set
 @blog.settings(:theme).settings(:homepage).background_color = 'white'
-
-@blog.settings(:theme, :homepage).background_color # 'white'
-#OR
+# Get
 @blog.settings(:theme).settings(:homepage).background_color # 'white'
 ```
+
+# Multiple Keys
+You can also define you nested keys in following ways, it's equal to nested keys
+```ruby
+# Set
+@blog.settings(:theme, :homepage).background_color = 'white'
+# Get
+@blog.settings(:theme, :homepage).background_color # 'white'
+```
+
 
 ## Method Name Customization
 You can customize the name of the settings method
