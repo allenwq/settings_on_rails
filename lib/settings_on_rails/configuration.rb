@@ -3,6 +3,9 @@ module SettingsOnRails
     NAME_COLUMN = :settings_column_name
     DEFAULTS_COLUMN = :default_settings
 
+    # Initialize needed variables for given class
+    # @param [ActiveRecord] klass, the Model who has settings
+    # @param [Symbol] column, the column to store settings
     def self.init(klass, column)
       klass.class_eval do
         class_attribute Configuration::NAME_COLUMN, Configuration::DEFAULTS_COLUMN
