@@ -70,6 +70,13 @@ class Blog < ActiveRecord::Base
 end
 ```
 
+You can get these defaults by:
+```ruby
+@blog.settings(:theme).background_color # 'red'
+@blog.settings(:theme).text_size # 50
+@blog.settings.title # 'My Space'
+```
+
 ## Nested Keys
 Settings on Rails supports nested keys
 ```ruby
