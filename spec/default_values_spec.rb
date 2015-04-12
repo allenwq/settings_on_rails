@@ -156,18 +156,97 @@ RSpec.describe 'Default settings' do
     end
 
     describe 'default values' do
-      before do
-        Blog.class_eval do
-          has_settings(:theme).has_settings(:homepage) do |s|
-            s.key :background, defaults: { color: 'red', image: 'bg.png' }
-            s.attr :text_size, default: 50
+      context 'nested keys' do
+        before do
+          Blog.class_eval do
+            has_settings(:theme).has_settings(:homepage) do |s|
+              s.key :background, defaults: { color: 'red', image: 'bg.png' }
+              s.attr :text_size, default: 50
+            end
           end
         end
-      end
-      subject { Blog.new }
+        let(:blog) { Blog.new }
 
-      it 'returns the default value' do
-        expect(Blog.new.settings(:theme).settings(:homepage).text_size).to eq 50
+        it 'returns the default value' do
+          expect(blog.settings(:theme).settings(:homepage).text_size).to eq 50
+          expect(blog.settings(:theme).settings(:homepage).settings(:background).color).to eq 'red'
+          expect(blog.settings(:theme, :homepage).text_size).to eq 50
+          expect(blog.settings(:theme, :homepage, :background).color).to eq 'red'
+        end
+      end
+
+      context 'multiple keys' do
+        before do
+          Blog.class_eval do
+            has_settings(:theme, :homepage) do |s|
+              s.key :background, defaults: { color: 'red', image: 'bg.png' }
+              s.attr :text_size, default: 50
+            end
+          end
+        end
+        let(:blog) { Blog.new }
+
+        it 'returns the default value' do
+          expect(blog.settings(:theme).settings(:homepage).text_size).to eq 50
+          expect(blog.settings(:theme).settings(:homepage).settings(:background).color).to eq 'red'
+          expect(blog.settings(:theme, :homepage).text_size).to eq 50
+          expect(blog.settings(:theme, :homepage, :background).color).to eq 'red'
+        end
+      end
+
+      context 'no keys' do
+        before do
+          Blog.class_eval do
+            has_settings do |s|
+              s.key :background, defaults: { color: 'red', image: 'bg.png' }
+              s.attr :text_size, default: 50
+            end
+          end
+        end
+        let(:blog) { Blog.new }
+
+        it 'returns the default value' do
+          expect(blog.settings.text_size).to eq 50
+          expect(blog.settings(:background).color).to eq 'red'
+        end
+      end
+
+      context 'with settings' do
+        before do
+          Blog.class_eval do
+            has_settings(:theme).has_settings(:homepage, :body) do |s|
+              s.key :background, defaults: { color: 'red', image: 'bg.png' }
+              s.attr :text_size, default: 50
+            end
+          end
+        end
+        let(:blog) { Blog.new }
+
+        before do
+          blog.settings(:theme).settings(:homepage).settings(:body).text_size = 100
+          blog.settings(:theme).settings(:homepage).settings(:body, :background).color = 'blue'
+        end
+
+        it 'returns the actual value' do
+          expect(blog.settings(:theme).settings(:homepage, :body).text_size).to eq 100
+          expect(blog.settings(:theme).settings(:homepage, :body).settings(:background).color).to eq 'blue'
+          expect(blog.settings(:theme, :homepage,:body).text_size).to eq 100
+          expect(blog.settings(:theme, :homepage, :body, :background).color).to eq 'blue'
+        end
+
+        context 'after save' do
+          before do
+            blog.save
+            blog.reload
+          end
+
+          it 'returns the actual value' do
+            expect(blog.settings(:theme).settings(:homepage, :body).text_size).to eq 100
+            expect(blog.settings(:theme).settings(:homepage, :body).settings(:background).color).to eq 'blue'
+            expect(blog.settings(:theme, :homepage,:body).text_size).to eq 100
+            expect(blog.settings(:theme, :homepage, :body, :background).color).to eq 'blue'
+          end
+        end
       end
     end
   end
