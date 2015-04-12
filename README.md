@@ -48,7 +48,6 @@ Get settings
 @blog.settings(:post).pagination # returns nil if not set
 ```
 
-<!--
 ## Default Values
 
 ```ruby
@@ -56,7 +55,8 @@ class Blog < ActiveRecord::Base
   has_settings_on :column
 
   has_settings do |s|
-    s.has_key :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.key :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.attr :title, default: 'My Space'
   end
 end
 ```
@@ -64,11 +64,11 @@ OR
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :column do |s|
-    s.has_key :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.key :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.attr :title, default: 'My Space'
   end
 end
 ```
--->
 
 ## Nested Keys
 Settings on Rails supports nested keys
