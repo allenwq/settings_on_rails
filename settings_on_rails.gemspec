@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['ALLEN WANG QIANG']
   spec.email         = ['qwang@comp.nus.edu.sg']
 
-  spec.summary       = %q{Handle Model specific Settings for Rails.}
-  spec.description   = %q{Ruby Gem help to handle model specific settings for ActiveRecord, settings are stored as hashes. Supports multiple keys and default values.}
+  spec.summary       = %q{Model specific Hash Preferences/Settings for Rails.}
+  spec.description   = %q{Ruby gem help to handle key/value settings(preferences) for ActiveRecord model. Settings are stored in hash, supports nested/multiple keys and default values.}
   spec.homepage      = 'https://github.com/allenwq/settings_on_rails'
   spec.license       = 'MIT'
 
