@@ -4,11 +4,11 @@ module SettingsOnRails
 
     module ClassMethods
       def has_settings_on(column, options = {}, &block)
-        SettingsColumn.setup(self, column)
+        Configuration.init(self, column)
 
         method_name = options[:method] || :settings
         define_method method_name do |*keys|
-          column = SettingsColumn.check!(self)
+          column = Configuration.check!(self)
 
           Settings.new(keys, self, column, method_name)
         end
@@ -17,7 +17,7 @@ module SettingsOnRails
       end
 
       def has_settings(*keys)
-        settings = HasSettings.new(keys, self, SettingsColumn::DEFAULTS_COLUMN)
+        settings = HasSettings.new(keys, self, Configuration::DEFAULTS_COLUMN)
         yield settings if block_given?
 
         settings

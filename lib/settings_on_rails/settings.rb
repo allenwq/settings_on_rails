@@ -58,7 +58,7 @@ module SettingsOnRails
     end
 
     def _default_settings(name)
-      default_node = KeyTreeBuilder.new(keys, @target_object.class, SettingsColumn::DEFAULTS_COLUMN, parent).current_node
+      default_node = KeyTreeBuilder.new(keys, @target_object.class, Configuration::DEFAULTS_COLUMN, parent).current_node
       default_node[name] if default_node
     end
   end
