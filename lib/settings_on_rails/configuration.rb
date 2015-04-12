@@ -7,12 +7,14 @@ module SettingsOnRails
     # @param [ActiveRecord] klass, the Model who has settings
     # @param [Symbol] column, the column to store settings
     def self.init(klass, column)
+      raise ArgumentError.new("has_settings_on: symbol expected, but got a #{column.class}") unless column.is_a?(Symbol)
+
       klass.class_eval do
         class_attribute Configuration::NAME_COLUMN, Configuration::DEFAULTS_COLUMN
 
         serialize column, Hash
         Configuration::init_defaults_column(self)
-        Configuration::init_name_column(self, column.to_sym)
+        Configuration::init_name_column(self, column)
       end
     end
 
