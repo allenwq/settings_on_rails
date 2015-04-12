@@ -22,9 +22,7 @@ module SettingsOnRails
     # @param [Symbol] keys
     # @param [Hash] options, the last param must be an option with a defaults hash
     def key(*keys)
-      options = keys.last
-      keys = keys[0...-1]
-      raise ArgumentError.new('has_settings: Hash option is expected') unless options.is_a?(Hash)
+      options = keys.extract_options!
       raise ArgumentError.new("has_settings: Option :defaults expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:defaults])
       keys.each do |key_name|
         raise ArgumentError.new("has_settings: symbol expected, but got a #{key_name.class}") unless key_name.is_a?(Symbol)
