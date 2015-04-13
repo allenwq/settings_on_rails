@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/models'
 require 'settings_on_rails'
-
+require 'byebug'
 RSpec.describe SettingsOnRails do
   before(:each) { clear_database }
 
@@ -64,20 +64,18 @@ RSpec.describe SettingsOnRails do
     end
 
     describe 'get/set attributes' do
-      let(:attributes) { [true, 'text', 100] }
+      let(:attributes) { {enabled: false, title: 'text', number: 100} }
 
       context 'set and get attributes' do
         before do
-          attributes.each do |attr|
-            key = 'attr_' + attr.to_s
-            blog.settings.send(key + '=', attr)
+          attributes.each do |k, v|
+            blog.settings.send(k.to_s + '=', v)
           end
         end
 
         it 'returns the value as set' do
-          attributes.each do |attr|
-            key = 'attr_' + attr.to_s
-            expect(blog.settings.send(key)).to eq attr
+          attributes.each do |k, v|
+            expect(blog.settings.send(k)).to eq v
           end
         end
 
@@ -85,9 +83,8 @@ RSpec.describe SettingsOnRails do
           before { blog.save }
 
           it 'returns the value as set' do
-            attributes.each do |attr|
-              key = 'attr_' + attr.to_s
-              expect(blog.reload.settings.send(key)).to eq attr
+            attributes.each do |k, v|
+              expect(blog.reload.settings.send(k)).to eq v
             end
           end
         end

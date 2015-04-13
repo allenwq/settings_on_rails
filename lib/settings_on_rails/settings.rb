@@ -24,7 +24,8 @@ module SettingsOnRails
       if method_name.to_s =~ REGEX_SETTER && args.size == 1
         _set_value($1, args.first)
       elsif method_name.to_s =~ REGEX_GETTER && args.size == 0
-        _get_value($1) || _default_settings($1)
+        value = _get_value($1)
+        value.nil? ? _default_settings($1) : value
       else
         super
       end
