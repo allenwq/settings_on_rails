@@ -35,7 +35,7 @@ end
 
 Set settings
 ```ruby
-@blog.settings.title = 'My Blog'
+@blog.settings.title = 'My Space'
 @blog.settings(:theme).background_color = 'blue'
 
 @blog.save
