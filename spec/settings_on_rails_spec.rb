@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/models'
 require 'settings_on_rails'
-require 'byebug'
+
 RSpec.describe SettingsOnRails do
   before(:each) { clear_database }
 
