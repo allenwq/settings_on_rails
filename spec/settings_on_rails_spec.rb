@@ -100,6 +100,7 @@ RSpec.describe SettingsOnRails do
           expect(blog.settings(:key1, :key2, :key3).value).to eq text
           expect(blog.settings(:key1).settings(:key2).settings(:key3).value).to eq text
           expect(blog.settings(:key1, :key2).settings(:key3).value).to eq text
+          expect(blog.settings(:key1, :key2).settings(:key3).value).to eq text
         end
       end
 
@@ -114,6 +115,33 @@ RSpec.describe SettingsOnRails do
       end
     end
 
+    describe 'type of return value' do
+      context 'when value is nil' do
+        it 'returns settings object' do
+          expect(blog.settings(:key1, :key2)).to be_instance_of SettingsOnRails::Settings
+        end
+      end
+
+      context 'when value is Hash' do
+        let(:settings) { blog.settings(:key1, :key2) }
+        before { settings.key3 = { "enabled" => false } }
+
+        it 'returns the settings object' do
+          expect(settings.settings(:key3)).to be_instance_of SettingsOnRails::Settings
+          expect(settings.settings(:key3).enabled).to eq false
+        end
+      end
+
+      context 'when value is not nil or Hash' do
+        before { blog.settings(:key1).settings(:key2).key3 = true }
+
+        it 'returns the correct value' do
+          expect(blog.settings(:key1, :key2, :key3)).to eq true
+          expect(blog.settings(:key1, :key2).settings(:key3)).to eq true
+        end
+      end
+    end
+
     describe 'hash functions' do
       let(:text) { 'SETTINGS ON RAILS' }
       context 'assign a new key to settings' do
@@ -121,7 +149,7 @@ RSpec.describe SettingsOnRails do
         before { settings_object.settings(:key3).value = text }
 
         it 'operates on the hash object when passing a block' do
-          expect(settings_object.any? {|key, value| key == :key3 }).to eq true
+          expect(settings_object.any? {|key, value| key == 'key3' }).to eq true
           expect(settings_object.settings(:key3).any? {|key, value| key == 'value' }).to eq true
         end
       end

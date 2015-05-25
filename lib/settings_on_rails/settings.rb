@@ -36,12 +36,23 @@ module SettingsOnRails
       end
     end
 
+    # Just a wrapper of current_node
+    def _current_node
+      current_node
+    end
+
     private
 
     def _settings(*keys)
       raise ArgumentError, 'wrong number of arguments (0 for 1..n)' if keys.size == 0
+      settings = Settings.new(keys, @target_object, @column_name, @method_name, self)
+      node = settings._current_node
 
-      Settings.new(keys, @target_object, @column_name, @method_name, self)
+      if node.nil? || node.is_a?(Hash)
+        settings
+      else
+        node
+      end
     end
 
     def _get_value(name)

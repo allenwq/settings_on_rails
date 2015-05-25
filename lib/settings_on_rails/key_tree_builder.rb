@@ -6,9 +6,11 @@ module SettingsOnRails
     # Thus we can differentiate settings(:key).attr and settings(:key, :attr)
     def initialize(keys, target_obj, target_column_name, parent)
       keys.each do |key_name|
-        raise ArgumentError.new("has_settings: symbol expected, but got a #{key_name.class}") unless key_name.is_a?(Symbol)
+        unless (key_name.is_a?(Symbol) || key_name.is_a?(String))
+          raise ArgumentError.new("has_settings: symbol or string expected, but got a #{key_name.class}")
+        end
       end
-      @keys = keys
+      @keys = keys.map(&:to_s)
       @target_obj = target_obj
       @column_name = target_column_name
       @parent = parent

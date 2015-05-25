@@ -10,7 +10,14 @@ module SettingsOnRails
         define_method method_name do |*keys|
           column = Configuration.check!(self)
 
-          Settings.new(keys, self, column, method_name)
+          settings = Settings.new(keys, self, column, method_name)
+          node = settings._current_node
+
+          if node.nil? || node.is_a?(Hash)
+            settings
+          else
+            node
+          end
         end
 
         has_settings(&block)
