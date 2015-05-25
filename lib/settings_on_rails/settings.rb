@@ -21,6 +21,11 @@ module SettingsOnRails
     end
 
     def method_missing(method_name, *args, &block)
+      if block_given?
+        node = current_node || {}
+        return node.send(method_name, *args, &block)
+      end
+
       if method_name.to_s =~ REGEX_SETTER && args.size == 1
         _set_value($1, args.first)
       elsif method_name.to_s =~ REGEX_GETTER && args.size == 0
