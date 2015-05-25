@@ -166,6 +166,25 @@ RSpec.describe 'Default settings' do
     end
 
     describe 'default values' do
+      context 'HashWithIndifferentAccess.new' do
+        before do
+          Blog.class_eval do
+            has_settings('theme').has_settings(:homepage) do |s|
+              s.key 'background', defaults: { 'color' => 'red', image: 'bg.png' }
+              s.attr 'text_size', default: 50
+            end
+          end
+        end
+        let(:settings) { Blog.new.settings(:theme, :homepage) }
+
+        it 'returns the default value' do
+          expect(settings.text_size).to eq 50
+          expect(settings.settings(:background).image).to eq 'bg.png'
+          expect(settings.text_size).to eq 50
+          expect(settings.settings(:background).color).to eq 'red'
+        end
+      end
+
       context 'nested keys' do
         before do
           Blog.class_eval do

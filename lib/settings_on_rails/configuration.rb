@@ -39,7 +39,7 @@ module SettingsOnRails
     # init to Hash {} for data attribute in klass if nil
     def self.init_defaults_column(klass)
       defaults = klass.send(Configuration::DEFAULTS_COLUMN)
-      klass.send(Configuration::DEFAULTS_COLUMN.to_s + '=', {}) unless defaults
+      klass.send(Configuration::DEFAULTS_COLUMN.to_s + '=', ActiveSupport::HashWithIndifferentAccess.new) unless defaults
     end
 
     def self.init_name_column(klass, column_name)
