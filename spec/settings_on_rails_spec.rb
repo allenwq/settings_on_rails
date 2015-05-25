@@ -146,11 +146,15 @@ RSpec.describe SettingsOnRails do
       let(:text) { 'SETTINGS ON RAILS' }
       context 'assign a new key to settings' do
         let(:settings_object) { blog.settings(:key1, :key2) }
-        before { settings_object.settings(:key3).value = text }
+        before { settings_object.settings(:key3).title = text }
 
         it 'operates on the hash object when passing a block' do
           expect(settings_object.any? {|key, value| key == 'key3' }).to eq true
-          expect(settings_object.settings(:key3).any? {|key, value| key == 'value' }).to eq true
+        end
+
+        it 'is a hash within different access object' do
+          expect((settings_object.map {|key, value| value }).first).
+              to be_instance_of ActiveSupport::HashWithIndifferentAccess
         end
       end
     end
