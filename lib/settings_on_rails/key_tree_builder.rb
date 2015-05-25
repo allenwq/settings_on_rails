@@ -10,7 +10,7 @@ module SettingsOnRails
           raise ArgumentError.new("has_settings: symbol or string expected, but got a #{key_name.class}")
         end
       end
-      @keys = keys.map(&:to_s)
+      @keys = keys
       @target_obj = target_obj
       @column_name = target_column_name
       @parent = parent

@@ -25,7 +25,9 @@ module SettingsOnRails
       options = keys.extract_options!
       raise ArgumentError.new("has_settings: Option :defaults expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:defaults])
       keys.each do |key_name|
-        raise ArgumentError.new("has_settings: symbol expected, but got a #{key_name.class}") unless key_name.is_a?(Symbol)
+        unless key_name.is_a?(Symbol) || key_name.is_a?(String)
+          raise ArgumentError.new("has_settings: symbol or string expected, but got a #{key_name.class}")
+        end
       end
 
       options[:defaults].each do |k, v|
@@ -38,7 +40,9 @@ module SettingsOnRails
     # @param [Symbol] value
     # @param [Hash] options, options with a default Hash
     def attr(value, options = {})
-      raise ArgumentError.new("has_settings: symbol expected, but got a #{value.class}") unless value.is_a?(Symbol)
+      unless value.is_a?(Symbol) || value.is_a?(String)
+        raise ArgumentError.new("has_settings: symbol expected, but got a #{value.class}")
+      end
       raise ArgumentError.new("has_settings: Option :default expected, but got #{options.keys.join(', ')}") unless options.blank? || (options.keys == [:default])
 
       default_value = options[:default]

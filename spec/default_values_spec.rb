@@ -20,11 +20,11 @@ RSpec.describe 'Default settings' do
     describe 'arguments validation' do
       context 'when column is not symbol' do
         it 'raises an error' do
-          expect{ Blog.class_eval { has_settings_on 'settings' } }.to raise_error(ArgumentError)
+          expect{ Blog.class_eval { has_settings_on 'settings' } }.not_to raise_error
         end
       end
 
-      context 'when key is not symbol' do
+      context 'when key is string' do
         it 'raises an error' do
           expect do
             Blog.class_eval do
@@ -32,7 +32,7 @@ RSpec.describe 'Default settings' do
                 s.key 'theme', defaults: { title: 'bootstrap' }
               end
             end
-          end.to raise_error(ArgumentError)
+          end.not_to raise_error
         end
       end
 
@@ -41,10 +41,20 @@ RSpec.describe 'Default settings' do
           expect do
             Blog.class_eval do
               has_settings_on :settings do |s|
-                s.attr 'theme', default: 'bootstrap'
+                s.attr Object.new, default: 'bootstrap'
               end
             end
           end.to raise_error(ArgumentError)
+        end
+
+        it 'does not raise any errors for string' do
+          expect do
+            Blog.class_eval do
+              has_settings_on :settings do |s|
+                s.attr 'key', default: 'bootstrap'
+              end
+            end
+          end.not_to raise_error
         end
       end
 
@@ -104,33 +114,33 @@ RSpec.describe 'Default settings' do
     describe 'arguments validation' do
       context 'when arguments are not symbol' do
         it 'raises an error' do
-          expect { Blog.class_eval { has_settings('theme') } }.to raise_error(ArgumentError)
-          expect { Blog.class_eval { has_settings(:posts, 'theme') } }.to raise_error(ArgumentError)
-          expect { Blog.class_eval { has_settings(:posts).has_settings('theme') } }.to raise_error(ArgumentError)
+          expect { Blog.class_eval { has_settings('theme') } }.not_to raise_error
+          expect { Blog.class_eval { has_settings(:posts, 'theme') } }.not_to raise_error
+          expect { Blog.class_eval { has_settings(:posts).has_settings('theme') } }.not_to raise_error
         end
       end
 
-      context 'when key is not symbol' do
-        it 'raises an error' do
+      context 'when key is string' do
+        it 'does not raise any errors' do
           expect do
             Blog.class_eval do
               has_settings do |s|
                 s.key 'theme', defaults: { title: 'bootstrap' }
               end
             end
-          end.to raise_error(ArgumentError)
+          end.not_to raise_error
         end
       end
 
-      context 'when attr is not symbol' do
-        it 'raises an error' do
+      context 'when attr is string' do
+        it 'does not raise any errors' do
           expect do
             Blog.class_eval do
               has_settings do |s|
                 s.attr 'theme', default: 'bootstrap'
               end
             end
-          end.to raise_error(ArgumentError)
+          end.not_to raise_error
         end
       end
 
@@ -215,7 +225,7 @@ RSpec.describe 'Default settings' do
         before do
           Blog.class_eval do
             has_settings(:theme).has_settings(:homepage, :body) do |s|
-              s.key :background, defaults: { color: 'red', image: 'bg.png' }
+              s.key 'background', defaults: { color: 'red', image: 'bg.png' }
               s.attr :text_size, default: 50
             end
           end
