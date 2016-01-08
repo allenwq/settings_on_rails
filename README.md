@@ -64,7 +64,7 @@ OR
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :column do |s|
-    s.key :theme, defaults:{ background_color: 'red', text_size: 50 }
+    s.key :theme, defaults: { background_color: 'red', text_size: 50 }
     s.attr :title, default: 'My Space'
   end
 end
