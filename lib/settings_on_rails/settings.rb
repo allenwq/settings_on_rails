@@ -41,6 +41,10 @@ module SettingsOnRails
       current_node
     end
 
+    def inspect
+      "#<#{self.class.name}:#{self.object_id}, node: #{_current_node}>"
+    end
+
     private
 
     def _settings(*keys)
