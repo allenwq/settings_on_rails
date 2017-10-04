@@ -4,7 +4,7 @@
 
 ## Installation
 
-Add this line to your application's Gemfile:
+If you are using [Bundler](http://bundler.io/), add this line to your application's Gemfile:
 
 ```ruby
 gem 'settings_on_rails'
@@ -14,26 +14,30 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Alternatively, install it by running:
 
     $ gem install settings_on_rails
 
 ## Getting Started
 
-Start off by adding a text field to the model which you want it to have settings
+### Add database column
+
+Start by adding a text field to the model on which you want settings:
+
 ```ruby
 rails g migration add_settings_column_to_blogs settings_column:text
-
 ```
 
-Declare in model
+### Declare in model
+
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :settings_column
 end
 ```
 
-Set settings
+### Set settings
+
 ```ruby
 @blog.settings.title = 'My Space'
 @blog.settings(:theme).background_color = 'blue'
@@ -41,14 +45,18 @@ Set settings
 @blog.save
 ```
 
-Get settings
-```ruby
-@blog.settings(:theme).background_color # returns 'blue'
+### Get settings
 
-@blog.settings(:post).pagination # returns nil if not set
+```ruby
+@blog.settings(:theme).background_color
+=> 'blue'
+
+# returns nil if not set
+@blog.settings(:post).pagination
+=> nil
 ```
 
-## Default Values
+## Defining Default Values
 
 ```ruby
 class Blog < ActiveRecord::Base
@@ -60,7 +68,9 @@ class Blog < ActiveRecord::Base
   end
 end
 ```
+
 OR
+
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :column do |s|
@@ -71,39 +81,58 @@ end
 ```
 
 You can get these defaults by:
+
 ```ruby
-@blog.settings(:theme).background_color # 'red'
-@blog.settings(:theme).text_size # 50
-@blog.settings.title # 'My Space'
+@blog.settings(:theme).background_color
+=> 'red'
+
+@blog.settings(:theme).text_size
+=> 50
+
+@blog.settings.title
+=> 'My Space'
 ```
 
 ## Nested Keys
-Settings on Rails supports nested keys
+
+Settings on Rails supports nested keys by chaining calls to the `settings` method:
+
 ```ruby
 # Set
 @blog.settings(:theme).settings(:homepage).background_color = 'white'
+
 # Get
-@blog.settings(:theme).settings(:homepage).background_color # 'white'
+@blog.settings(:theme).settings(:homepage).background_color
+=> 'white'
 ```
 
-# Multiple Keys
-You can also define you nested keys in following ways, it's equal to nested keys
+## Multiple Keys
+
+You can also define multiple keys in the following way, this is equivalent to nested keys:
+
 ```ruby
 # Set
 @blog.settings(:theme, :homepage).background_color = 'white'
+
 # Get
-@blog.settings(:theme, :homepage).background_color # 'white'
+@blog.settings(:theme, :homepage).background_color
+=> 'white'
 ```
 
 
 ## Method Name Customization
-You can customize the name of the settings method
+
+You can customize the name of the `settings` method:
+
 ```ruby
 class Blog < ActiveRecord::Base
   has_settings_on :settings_column, method: :preferences
 end
+```
 
-# Then you can do
+Which allows you to do:
+
+```ruby
 @blog.preferences(:theme).background_color
 ```
 
